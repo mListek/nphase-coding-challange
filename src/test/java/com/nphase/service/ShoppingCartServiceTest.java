@@ -44,9 +44,8 @@ public class ShoppingCartServiceTest {
             new Product("Cheese", BigDecimal.valueOf(8.0), 2, "food")
         ));
 
-        BigDecimal result = service.calculatePriceWithCategoryDiscount2(cart);
+        BigDecimal result = service.calculatePriceWithCategoryDiscount(cart);
 
         Assertions.assertEquals(BigDecimal.valueOf(31.84), result);
     }
-
 }
