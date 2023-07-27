@@ -36,4 +36,17 @@ public class ShoppingCartServiceTest {
         Assertions.assertEquals(BigDecimal.valueOf(33.0), result);
     }
 
+    @Test
+    public void calculatePriceDiscountedByCategory() {
+        ShoppingCart cart = new ShoppingCart(Arrays.asList(
+            new Product("Tea", BigDecimal.valueOf(5.3), 2, "drinks"),
+            new Product("Coffee", BigDecimal.valueOf(3.5), 2, "drinks"),
+            new Product("Cheese", BigDecimal.valueOf(8.0), 2, "food")
+        ));
+
+        BigDecimal result = service.calculatePriceWithCategoryDiscount2(cart);
+
+        Assertions.assertEquals(BigDecimal.valueOf(31.84), result);
+    }
+
 }
