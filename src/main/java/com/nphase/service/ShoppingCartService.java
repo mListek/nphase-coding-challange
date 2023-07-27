@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class ShoppingCartService {
     private final DiscountProperties properties = new DiscountProperties();
 
+    // task1, task2 - calculate total price of all items
     public BigDecimal calculateTotalPrice(ShoppingCart shoppingCart) {
         return shoppingCart.getProducts()
                 .stream()
@@ -23,6 +24,7 @@ public class ShoppingCartService {
                 .orElse(BigDecimal.ZERO);
     }
 
+    // helper function to apply discount if necessary
     public BigDecimal calculateProductPrice(Product product) {
         BigDecimal result = product.getPricePerUnit().multiply(BigDecimal.valueOf(product.getQuantity()));
 
@@ -31,9 +33,12 @@ public class ShoppingCartService {
             : result;
     }
 
+    // task3
     public BigDecimal calculatePriceWithCategoryDiscount(ShoppingCart shoppingCart) {
+        // identify categories that can be discounted
         Set <String> categoriesWithDiscount = mapCategories(shoppingCart);
 
+        // split products into two lists - discounted and regular
         List<List<Product>> filteredProductList = shoppingCart.getProducts()
             .stream()
             .collect(
@@ -44,6 +49,7 @@ public class ShoppingCartService {
                 )
             );
 
+        // sum first list and apply discount
         BigDecimal sumWithDiscount = filteredProductList.get(0).stream()
             .map(product -> product.getPricePerUnit()
                 .multiply(BigDecimal.valueOf(product.getQuantity()))
@@ -51,6 +57,7 @@ public class ShoppingCartService {
             .reduce(BigDecimal::add)
             .orElse(BigDecimal.ZERO);
 
+        // sum second list without discount
         BigDecimal sumWithoutDiscount = filteredProductList.get(1).stream()
             .map(product -> product.getPricePerUnit()
                 .multiply(BigDecimal.valueOf(product.getQuantity())))
@@ -60,12 +67,14 @@ public class ShoppingCartService {
         return sumWithDiscount.add(sumWithoutDiscount);
     }
 
+    // helper function to identify categories with enough products to apply discount
     public Set<String> mapCategories(ShoppingCart shoppingCart) {
         Map<String, Integer> categories = shoppingCart.getProducts().stream()
             .collect(Collectors.groupingBy(Product::getCategory, Collectors.summingInt(Product::getQuantity)));
 
         Set<String> categoriesWithDiscount = new HashSet<>();
 
+        // filter categories and add to the set
         for (Map.Entry<String, Integer> category : categories.entrySet()) {
             if (category.getValue() >= properties.getMinItemsForDiscount()) {
                 categoriesWithDiscount.add(category.getKey());
